@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".ProfileFragment">
 
     <TextView
@@ -10,5 +11,43 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:text="Profile Fragment" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/txtUserId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="User ID: "
+            android:textSize="18sp"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center" />
+
+        <TextView
+            android:id="@+id/txtUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Username: "
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center" />
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:layout_marginTop="20dp"
+            android:layout_gravity="center"/>
+
+
+    </LinearLayout>
+
+
+
 
 </FrameLayout>

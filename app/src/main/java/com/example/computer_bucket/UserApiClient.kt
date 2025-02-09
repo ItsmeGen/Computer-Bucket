@@ -3,8 +3,8 @@ package com.example.computer_bucket
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object ApiClient {
-    private const val BASE_URL = "http://192.168.124.240/projectApi/"
+object UserApiClient {
+    private const val BASE_URL = "http://192.168.124.240/userApi/"
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
@@ -13,7 +13,7 @@ object ApiClient {
             .build()
     }
 
-    fun create(): ApiService {
-        return retrofit.create(ApiService::class.java)
+    val apiService: UserApiService by lazy {
+        retrofit.create(UserApiService::class.java)
     }
 }
