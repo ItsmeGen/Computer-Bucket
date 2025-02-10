@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -33,6 +34,12 @@ class HomeFragment : Fragment() {
 
         setupRecyclerView()
         fetchProducts()
+
+        val cartBtn : ImageView = view.findViewById(R.id.cart_btn)
+        cartBtn.setOnClickListener{
+            val intent = Intent(activity,CartActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupRecyclerView() {

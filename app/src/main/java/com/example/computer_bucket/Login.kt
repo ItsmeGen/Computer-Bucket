@@ -1,6 +1,5 @@
 package com.example.computer_bucket
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -18,10 +17,10 @@ class Login : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // Check if user is already logged in
-        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        val isLoggedIn = sharedPref.getBoolean("isLoggedIn", false)
+        val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+        val userId = sharedPreferences.getInt("user_id", -1)
 
-        if (isLoggedIn) {
+        if (userId != -1) { // User is already logged in
             startActivity(Intent(this, MainActivity::class.java))
             finish()
         }
@@ -32,12 +31,10 @@ class Login : AppCompatActivity() {
         val emailEditText: EditText = findViewById(R.id.email)
         val passwordEditText: EditText = findViewById(R.id.password)
         val btnLogin: Button = findViewById(R.id.btnLogin)
-        val signUp : TextView = findViewById(R.id.sign_in_btn)
+        val signUp: TextView = findViewById(R.id.sign_in_btn)
 
-        signUp.setOnClickListener{
-            val intent = Intent(this,SignUp::class.java)
-            startActivity(intent)
-
+        signUp.setOnClickListener {
+            startActivity(Intent(this, SignUp::class.java))
         }
 
         btnLogin.setOnClickListener {
@@ -63,19 +60,15 @@ class Login : AppCompatActivity() {
                     if (loginResponse.success) {
                         val user = loginResponse.user
 
-                        // Save login state in SharedPreferences
-                        val sharedPref = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-                        with(sharedPref.edit()) {
-                            putBoolean("isLoggedIn", true)
-                            putString("user_id", user.id)  // Save User ID
-                            putString("username", user.username) // Save Username
-                            putString("user_email", user.email) // Save Email
-                            apply()
-                        }
+                        // Save user details in SharedPreferences
+                        val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
+                        val editor = sharedPreferences.edit()
+                        editor.putInt("user_id", user.id.toInt()) // Save user ID
+                        editor.putString("username", user.username) // Save username
+                        editor.apply()
 
                         // Navigate to MainActivity
-                        val intent = Intent(this@Login, MainActivity::class.java)
-                        startActivity(intent)
+                        startActivity(Intent(this@Login, MainActivity::class.java))
                         finish()
                     } else {
                         Toast.makeText(this@Login, loginResponse.message, Toast.LENGTH_SHORT).show()

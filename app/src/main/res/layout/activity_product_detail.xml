@@ -51,7 +51,7 @@
                 tools:ignore="Suspicious0dp" />
 
             <TextView
-                android:id="@+id/productName"
+                android:id="@+id/productNameText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -59,7 +59,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/productPrice"
+                android:id="@+id/productPriceText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -67,7 +67,7 @@
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/productDescription"
+                android:id="@+id/productDescriptionText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"

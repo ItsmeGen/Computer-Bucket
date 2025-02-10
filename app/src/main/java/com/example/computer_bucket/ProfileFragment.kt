@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 
 class ProfileFragment : Fragment() {
@@ -23,13 +24,19 @@ class ProfileFragment : Fragment() {
         val btnLogout: Button = view.findViewById(R.id.btnLogout)
 
         // Get user details from SharedPreferences
-        val sharedPref = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        val userId = sharedPref.getString("user_id", "N/A")
+        val sharedPref = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = sharedPref.getInt("user_id", -1)
         val username = sharedPref.getString("username", "N/A")
 
-        // Display user details
-        txtUserId.text = "User ID: $userId"
-        txtUsername.text = "Username: $username"
+        if (userId == -1) {
+            Toast.makeText(requireContext(), "User not found. Please log in.", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(requireContext(), Login::class.java))
+            requireActivity().finish()
+        } else {
+            // Display user details
+            txtUserId.text = "User ID: $userId"
+            txtUsername.text = "Username: $username"
+        }
 
         btnLogout.setOnClickListener {
             logoutUser()
@@ -39,12 +46,9 @@ class ProfileFragment : Fragment() {
     }
 
     private fun logoutUser() {
-        val sharedPref = requireActivity().getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        val sharedPref = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
-            remove("isLoggedIn")
-            remove("user_email")
-            remove("user_id")
-            remove("username")
+            clear() // Clears all saved user data
             apply()
         }
 
