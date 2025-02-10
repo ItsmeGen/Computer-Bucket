@@ -1,8 +1,12 @@
 package com.example.computer_bucket
 
-import androidx.appcompat.app.AppCompatActivity
+import android.app.AlertDialog
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.example.computer_bucket.databinding.ActivityProductDetailBinding
 
@@ -15,7 +19,7 @@ class ProductDetailActivity : AppCompatActivity() {
         binding = ActivityProductDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        dbHelper = DataBaseHelper(this) // Initialize database helper
+        dbHelper = DataBaseHelper(this)
 
         intent.extras?.let { bundle ->
             binding.apply {
@@ -26,20 +30,24 @@ class ProductDetailActivity : AppCompatActivity() {
                 val productSold = bundle.getInt("product_sold")
                 val productImgUrl = bundle.getString("product_imgUrl") ?: ""
 
+
+                val productNameText: TextView = findViewById(R.id.productNameText)
+                val productPriceText: TextView = findViewById(R.id.productPriceText)
+                val productDescriptionText: TextView = findViewById(R.id.productDescriptionText)
+
                 productNameText.text = productName
                 productDescriptionText.text = productDescription
                 productPriceText.text = "Price: $${productPrice}"
 
-                // Load image using Glide
                 Glide.with(this@ProductDetailActivity)
                     .load(productImgUrl)
                     .placeholder(R.drawable.loading_image)
                     .error(R.drawable.arrow_back)
                     .into(productImage)
 
-                // Add to Cart button
+
                 addToCartButton.setOnClickListener {
-                    addToCart(productId, productName, productDescription, productPrice, productSold, productImgUrl)
+                    showQuantityDialog(productId, productName, productDescription, productPrice, productSold, productImgUrl)
                 }
             }
         }
@@ -49,7 +57,42 @@ class ProductDetailActivity : AppCompatActivity() {
         }
     }
 
-    private fun addToCart(productId: Int, name: String, description: String, price: Double, sold: Int, imgUrl: String) {
+    private fun showQuantityDialog(productId: Int, name: String, description: String, price: Double, sold: Int, imgUrl: String) {
+        val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_quantity, null)
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogView)
+            .setCancelable(true)
+            .create()
+
+        val buttonPlus = dialogView.findViewById<Button>(R.id.buttonPlus)
+        val buttonMinus = dialogView.findViewById<Button>(R.id.buttonMinus)
+        val textQuantity = dialogView.findViewById<TextView>(R.id.textQuantity)
+        val confirmButton = dialogView.findViewById<Button>(R.id.confirmButton)
+
+        var quantity = 1
+        textQuantity.text = quantity.toString()
+
+        buttonPlus.setOnClickListener {
+            quantity++
+            textQuantity.text = quantity.toString()
+        }
+
+        buttonMinus.setOnClickListener {
+            if (quantity > 1) {
+                quantity--
+                textQuantity.text = quantity.toString()
+            }
+        }
+
+        confirmButton.setOnClickListener {
+            addToCart(productId, name, description, price, sold, imgUrl, quantity)
+            dialog.dismiss()
+        }
+
+        dialog.show()
+    }
+
+    private fun addToCart(productId: Int, name: String, description: String, price: Double, sold: Int, imgUrl: String, quantity: Int) {
         val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
         val userId = sharedPreferences.getInt("user_id", -1)
 
@@ -58,11 +101,11 @@ class ProductDetailActivity : AppCompatActivity() {
             return
         }
 
-        val product = Product(productId, name, description, price, sold, imgUrl)
+        val product = Product(productId, name, description, price, sold, imgUrl,quantity)
 
-        val success = dbHelper.addToCart(userId, product, 1)
+        val success = dbHelper.addToCart(userId, product, quantity)
         if (success) {
-            Toast.makeText(this, "Added to Cart!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Added $quantity to Cart!", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this, "Failed to add to cart!", Toast.LENGTH_SHORT).show()
         }

@@ -11,10 +11,9 @@ class DataBaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         private const val DATABASE_NAME = "ComputerBucketDB"
         private const val DATABASE_VERSION = 1
 
-        // Table Name
+
         private const val TABLE_CART = "cart"
 
-        // Column Names
         private const val COLUMN_ID = "id"
         private const val COLUMN_USER_ID = "user_id"
         private const val COLUMN_PRODUCT_ID = "product_id"
@@ -82,7 +81,8 @@ class DataBaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
                     product_description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_DESCRIPTION)),
                     product_price = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_PRICE)),
                     product_sold = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_SOLD)),
-                    product_imgUrl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_IMG_URL))
+                    product_imgUrl = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PRODUCT_IMG_URL)),
+                    quantity = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_QUANTITY))
                 )
                 cartItems.add(product)
             } while (cursor.moveToNext())
@@ -92,7 +92,6 @@ class DataBaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return cartItems
     }
 
-    // Function to remove an item from the cart
     fun removeFromCart(userId: Int, productId: Int): Boolean {
         val db = writableDatabase
         val result = db.delete(TABLE_CART, "$COLUMN_USER_ID = ? AND $COLUMN_PRODUCT_ID = ?", arrayOf(userId.toString(), productId.toString()))
@@ -100,11 +99,27 @@ class DataBaseHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME
         return result > 0
     }
 
-    // Function to clear cart for a user
     fun clearCart(userId: Int): Boolean {
         val db = writableDatabase
         val result = db.delete(TABLE_CART, "$COLUMN_USER_ID = ?", arrayOf(userId.toString()))
         db.close()
         return result > 0
     }
+    fun updateCartItemQuantity(itemId: Int, userId: Int, newQuantity: Int): Boolean {
+        val db = writableDatabase
+        val values = ContentValues()
+        values.put("quantity", newQuantity)
+
+        val rowsAffected = db.update(
+            "cart",
+            values,
+            "product_id = ? AND user_id = ?",
+            arrayOf(itemId.toString(), userId.toString())
+        )
+
+        db.close()
+
+        return rowsAffected > 0
+    }
+
 }

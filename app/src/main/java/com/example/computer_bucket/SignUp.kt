@@ -24,7 +24,7 @@ class SignUp : AppCompatActivity() {
         val etEmail: EditText = findViewById(R.id.create_email)
         val etPassword: EditText = findViewById(R.id.create_password)
 
-        // Register Button Click Listener
+        // RegisterBtn
         btnSignUp.setOnClickListener {
             val username = etUsername.text.toString().trim()
             val email = etEmail.text.toString().trim()
@@ -45,7 +45,7 @@ class SignUp : AppCompatActivity() {
         }
     }
 
-    // Function to Call API
+    // Call API
     private fun registerUser(username: String, email: String, password: String) {
         val user = RegisterRequest(username, email, password)
 

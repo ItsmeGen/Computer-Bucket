@@ -8,4 +8,7 @@ data class Product(
     val product_price: Double,
     val product_sold : Int,
     val product_imgUrl: String,
+    var quantity: Int,
+    var isChecked: Boolean = false  // Default: unchecked
+
 )
