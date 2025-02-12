@@ -6,17 +6,23 @@
     android:fitsSystemWindows="true"
     tools:context=".ProfileFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Profile Fragment" />
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="20dp"
+        tools:context=".ProfileFragment"
+        android:background="@color/white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginBottom="20dp" />
 
         <TextView
             android:id="@+id/txtUserId"
@@ -24,8 +30,8 @@
             android:layout_height="wrap_content"
             android:text="User ID: "
             android:textSize="18sp"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center" />
+            android:textColor="@color/black"
+            android:layout_marginBottom="10dp" />
 
         <TextView
             android:id="@+id/txtUsername"
@@ -33,21 +39,22 @@
             android:layout_height="wrap_content"
             android:text="Username: "
             android:textSize="18sp"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center" />
+            android:textColor="@color/black"
+            android:layout_marginBottom="20dp" />
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Login"
+            android:visibility="gone" /> <!-- Default: Hidden, shown only if no user is logged in -->
 
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Logout"
-            android:layout_marginTop="20dp"
-            android:layout_gravity="center"/>
-
-
+            android:visibility="gone" /> <!-- Default: Hidden, shown only if user is logged in -->
     </LinearLayout>
-
-
-
 
 </FrameLayout>

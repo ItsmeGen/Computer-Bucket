@@ -16,26 +16,33 @@ class ProfileFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
         val txtUserId: TextView = view.findViewById(R.id.txtUserId)
         val txtUsername: TextView = view.findViewById(R.id.txtUsername)
+        val btnLogin: Button = view.findViewById(R.id.btnLogin)
         val btnLogout: Button = view.findViewById(R.id.btnLogout)
 
-        // Get user details from SharedPreferences
         val sharedPref = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         val userId = sharedPref.getInt("user_id", -1)
         val username = sharedPref.getString("username", "N/A")
 
         if (userId == -1) {
-            Toast.makeText(requireContext(), "User not found. Please log in.", Toast.LENGTH_SHORT).show()
-            startActivity(Intent(requireContext(), Login::class.java))
-            requireActivity().finish()
+            txtUserId.text = "User ID: N/A"
+            txtUsername.text = "Username: N/A"
+            btnLogout.visibility = View.GONE
+            btnLogin.visibility = View.VISIBLE
         } else {
-            // Display user details
             txtUserId.text = "User ID: $userId"
             txtUsername.text = "Username: $username"
+            btnLogin.visibility = View.GONE
+            btnLogout.visibility = View.VISIBLE
+        }
+
+        btnLogin.setOnClickListener {
+            startActivity(Intent(requireContext(), Login::class.java))
+            requireActivity().finish()
         }
 
         btnLogout.setOnClickListener {
@@ -48,11 +55,11 @@ class ProfileFragment : Fragment() {
     private fun logoutUser() {
         val sharedPref = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
         with(sharedPref.edit()) {
-            clear() // Clears all saved user data
+            clear()
             apply()
         }
-
-        val intent = Intent(activity, Login::class.java)
+        Toast.makeText(requireContext(), "Successfully Logged Out", Toast.LENGTH_SHORT).show()
+        val intent = Intent(requireContext(), Login::class.java)
         startActivity(intent)
         requireActivity().finish()
     }

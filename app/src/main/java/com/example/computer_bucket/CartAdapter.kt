@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 
@@ -39,7 +40,7 @@ class CartAdapter(
         val view = LayoutInflater.from(context).inflate(R.layout.item_cart, parent, false)
         return CartViewHolder(view)
     }
-
+    private var hasShownToast = false
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
         val product = cartItems[position]
 
@@ -74,8 +75,15 @@ class CartAdapter(
         }
 
         holder.increaseButton.setOnClickListener {
-            val newQuantity = product.quantity + 1
-            updateQuantity(product, newQuantity)
+            if (product.quantity < 10) {
+                val newQuantity = product.quantity + 1
+                updateQuantity(product, newQuantity)
+                holder.increaseButton.isEnabled = false
+            } else {
+                Toast.makeText(context, "Maximum quantity is 10", Toast.LENGTH_SHORT).show()
+                hasShownToast = true
+            }
+
         }
 
         holder.decreaseButton.setOnClickListener {

@@ -18,6 +18,7 @@ class CartActivity : AppCompatActivity() {
     private var userId: Int = -1 // Default user ID
     private lateinit var totalPriceText: TextView
     private lateinit var checkoutButton: Button
+    private var hasShownToast = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +64,11 @@ class CartActivity : AppCompatActivity() {
     }
 
     private fun updateQuantityInDatabase(itemId: Int, newQuantity: Int) {
+        if (newQuantity >= 10) {
+            Toast.makeText(this, "Maximum quantity is 10", Toast.LENGTH_SHORT).show()
+            hasShownToast = false
+            return
+        }
         val isUpdated = databaseHelper.updateCartItemQuantity(itemId, userId, newQuantity)
         if (isUpdated) {
             loadCartItems()

@@ -1,6 +1,7 @@
 package com.example.computer_bucket
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.Button
@@ -13,6 +14,7 @@ import com.example.computer_bucket.databinding.ActivityProductDetailBinding
 class ProductDetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProductDetailBinding
     private lateinit var dbHelper: DataBaseHelper
+    private var hasShownToast = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,8 +75,13 @@ class ProductDetailActivity : AppCompatActivity() {
         textQuantity.text = quantity.toString()
 
         buttonPlus.setOnClickListener {
-            quantity++
-            textQuantity.text = quantity.toString()
+            if(quantity < 10) {
+                quantity++
+                textQuantity.text = quantity.toString()
+            }else{
+                Toast.makeText(this, "Maximum quantity is 10", Toast.LENGTH_SHORT).show()
+                hasShownToast = true
+            }
         }
 
         buttonMinus.setOnClickListener {
@@ -97,7 +104,9 @@ class ProductDetailActivity : AppCompatActivity() {
         val userId = sharedPreferences.getInt("user_id", -1)
 
         if (userId == -1) {
-            Toast.makeText(this, "Please log in first!", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this,Login::class.java)
+            startActivity(intent)
+            Toast.makeText(this, "Can't add to cart Please log in first!", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -106,6 +115,7 @@ class ProductDetailActivity : AppCompatActivity() {
         val success = dbHelper.addToCart(userId, product, quantity)
         if (success) {
             Toast.makeText(this, "Added $quantity to Cart!", Toast.LENGTH_SHORT).show()
+            hasShownToast = true
         } else {
             Toast.makeText(this, "Failed to add to cart!", Toast.LENGTH_SHORT).show()
         }

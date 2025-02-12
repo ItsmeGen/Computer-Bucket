@@ -1,11 +1,15 @@
 package com.example.computer_bucket
 
+import android.app.Dialog
 import android.content.Intent
+import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
-import android.widget.Toast
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
+import android.view.MotionEvent
+import android.widget.*
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
@@ -13,25 +17,57 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class Login : AppCompatActivity() {
+    private lateinit var progressBarLayout: LinearLayout
+    private lateinit var emailEditText: EditText
+    private lateinit var passwordEditText: EditText
+    private lateinit var btnLogin: Button
+    private lateinit var signUp: TextView
+    private lateinit var loadingDialog: Dialog
+    private lateinit var sharedPreferences: SharedPreferences
+    private var isPasswordVisible = false
+    private var hasShownToast = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Check if user is already logged in
-        val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", -1)
+        // Initialize SharedPreferences
+        sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
 
-        if (userId != -1) { // User is already logged in
+        // Check if user is already logged in
+        if (sharedPreferences.getBoolean("is_logged_in", false)) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
+            return
         }
+
+        // Setup loading dialog
+        loadingDialog = Dialog(this)
+        loadingDialog.setContentView(R.layout.progress_loading)
+        loadingDialog.setCancelable(false)
+        loadingDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
 
-        val emailEditText: EditText = findViewById(R.id.email)
-        val passwordEditText: EditText = findViewById(R.id.password)
-        val btnLogin: Button = findViewById(R.id.btnLogin)
-        val signUp: TextView = findViewById(R.id.sign_in_btn)
+        // Initialize UI elements
+        emailEditText = findViewById(R.id.email)
+        passwordEditText = findViewById(R.id.password)
+        btnLogin = findViewById(R.id.btnLogin)
+        signUp = findViewById(R.id.sign_in_btn)
+        progressBarLayout = findViewById(R.id.loadingLayout)
+
+        // Set up password visibility toggle using drawableEnd
+        passwordEditText.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_UP) {
+                val drawableEnd = passwordEditText.compoundDrawables[2] // Right drawable
+                if (drawableEnd != null && event.rawX >= (passwordEditText.right - drawableEnd.bounds.width())) {
+                    togglePasswordVisibility()
+                    passwordEditText.performClick()
+                    return@setOnTouchListener true
+                }
+            }
+            false
+        }
 
         signUp.setOnClickListener {
             startActivity(Intent(this, SignUp::class.java))
@@ -45,29 +81,46 @@ class Login : AppCompatActivity() {
                 loginUser(email, password)
             } else {
                 Toast.makeText(this, "Please enter email and password!", Toast.LENGTH_SHORT).show()
+                hasShownToast = true
             }
         }
     }
 
+    private fun togglePasswordVisibility() {
+        if (isPasswordVisible) {
+            passwordEditText.transformationMethod = PasswordTransformationMethod.getInstance()
+            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.visibility_off, 0)
+        } else {
+            passwordEditText.transformationMethod = HideReturnsTransformationMethod.getInstance()
+            passwordEditText.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.visibility_on, 0)
+        }
+        isPasswordVisible = !isPasswordVisible
+        passwordEditText.setSelection(passwordEditText.length())
+    }
+
     private fun loginUser(email: String, password: String) {
+        loadingDialog.show()
+        btnLogin.isEnabled = false
+
         val apiService = UserApiClient.apiService
         val call = apiService.loginUser(LoginRequest(email, password))
 
         call.enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                loadingDialog.dismiss()
+                btnLogin.isEnabled = true
                 if (response.isSuccessful && response.body() != null) {
                     val loginResponse = response.body()!!
                     if (loginResponse.success) {
                         val user = loginResponse.user
 
                         // Save user details in SharedPreferences
-                        val sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
                         val editor = sharedPreferences.edit()
-                        editor.putInt("user_id", user.id.toInt()) // Save user ID
-                        editor.putString("username", user.username) // Save username
+                        editor.putInt("user_id", user.id.toInt())
+                        editor.putString("username", user.username)
+                        editor.putBoolean("is_logged_in", true) // Save login state
                         editor.apply()
 
-                        // Navigate to MainActivity
                         startActivity(Intent(this@Login, MainActivity::class.java))
                         finish()
                     } else {
@@ -79,6 +132,8 @@ class Login : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                loadingDialog.dismiss()
+                btnLogin.isEnabled = true
                 Toast.makeText(this@Login, "Login failed: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
