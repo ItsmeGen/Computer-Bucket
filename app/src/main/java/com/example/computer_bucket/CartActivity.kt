@@ -18,7 +18,6 @@ class CartActivity : AppCompatActivity() {
     private var userId: Int = -1 // Default user ID
     private lateinit var totalPriceText: TextView
     private lateinit var checkoutButton: Button
-    private var hasShownToast = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,8 +28,8 @@ class CartActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
-        totalPriceText = findViewById(R.id.totalPriceText)
 
+        totalPriceText = findViewById(R.id.totalPriceTextView)
         databaseHelper = DataBaseHelper(this)
 
         // Get user ID from SharedPreferences
@@ -41,24 +40,30 @@ class CartActivity : AppCompatActivity() {
         recyclerView.layoutManager = LinearLayoutManager(this)
 
         checkoutButton = findViewById(R.id.checkoutButton)
-        checkoutButton.isEnabled = false
+        checkoutButton.isEnabled = false // Disable checkout by default
+
+        checkoutButton.setOnClickListener {
+            proceedToCheckout()
+        }
 
         loadCartItems()
     }
 
     private fun loadCartItems() {
-        val cartItems = databaseHelper.getCartItems(userId)
+        // Ensure we get a non-null list
+        val cartItems = databaseHelper.getCartItems(userId) ?: emptyList()
+
         cartAdapter = CartAdapter(this, cartItems.toMutableList(), databaseHelper, userId,
             onQuantityChanged = { itemId, newQuantity ->
                 updateQuantityInDatabase(itemId, newQuantity)
             },
             onItemRemoved = {
-                loadCartItems()
+                loadCartItems() // Reload cart after removal
             },
             onSelectionChanged = { total ->
                 updateTotalPrice(total)
+                checkoutButton.isEnabled = total > 0 // Enable checkout button when total is greater than 0
             }
-
         )
         recyclerView.adapter = cartAdapter
     }
@@ -66,17 +71,32 @@ class CartActivity : AppCompatActivity() {
     private fun updateQuantityInDatabase(itemId: Int, newQuantity: Int) {
         if (newQuantity >= 10) {
             Toast.makeText(this, "Maximum quantity is 10", Toast.LENGTH_SHORT).show()
-            hasShownToast = false
             return
         }
         val isUpdated = databaseHelper.updateCartItemQuantity(itemId, userId, newQuantity)
         if (isUpdated) {
-            loadCartItems()
+            loadCartItems() // Reload items after quantity update
         } else {
             Toast.makeText(this, "Failed to update quantity", Toast.LENGTH_SHORT).show()
         }
     }
+
     private fun updateTotalPrice(total: Int) {
         totalPriceText.text = "Total: ₱$total"
+    }
+
+    private fun proceedToCheckout() {
+        // Get the list of selected products from the adapter
+        val selectedProducts = cartAdapter.getSelectedProducts()
+
+        if (selectedProducts.isEmpty()) {
+            Toast.makeText(this, "Please select at least one item", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Proceed to the checkout activity with selected products
+        val intent = Intent(this, CheckoutActivity::class.java)
+        intent.putParcelableArrayListExtra("SELECTED_PRODUCTS", ArrayList(selectedProducts))
+        startActivity(intent)
     }
 }

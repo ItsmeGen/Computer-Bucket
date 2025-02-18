@@ -21,7 +21,7 @@ class CartAdapter(
     private val userId: Int,  // Current logged-in user ID
     private val onQuantityChanged: (Int, Int) -> Unit, // Callback when quantity changes
     private val onItemRemoved: () -> Unit,
-    private val onSelectionChanged: (Int) -> Unit// Callback to refresh UI after item removal
+    private val onSelectionChanged: (Int) -> Unit // Callback to refresh UI after item removal
 ) : RecyclerView.Adapter<CartAdapter.CartViewHolder>() {
     private val selectedItems = mutableSetOf<Int>()
 
@@ -60,8 +60,12 @@ class CartAdapter(
         holder.checkBox.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
                 selectedItems.add(product.product_id)
+                // Update isChecked property of product
+                product.isChecked = true
             } else {
                 selectedItems.remove(product.product_id)
+                // Update isChecked property of product
+                product.isChecked = false
             }
             calculateTotal()
         }
@@ -143,6 +147,7 @@ class CartAdapter(
         }
         onSelectionChanged(total.toInt())
     }
+
     private fun navigateToProductDetail(product: Product) {
         val intent = Intent(context, ProductDetailActivity::class.java).apply {
             putExtra("product_id", product.product_id)
@@ -154,4 +159,8 @@ class CartAdapter(
         context.startActivity(intent)
     }
 
+    // New function to get the selected products for checkout
+    fun getSelectedProducts(): List<Product> {
+        return cartItems.filter { selectedItems.contains(it.product_id) }
+    }
 }
