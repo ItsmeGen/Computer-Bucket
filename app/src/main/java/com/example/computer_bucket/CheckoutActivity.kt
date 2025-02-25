@@ -102,7 +102,7 @@ class CheckoutActivity : AppCompatActivity() {
 
             val orderRequest = OrderRequest(
                 user_id = userId,
-                total_price = totalTextView.text.toString().replace("₱", "").toDouble(),
+                total_price = totalTextView.text.toString().replace("₱", "").replace(",","").toDouble(),
                 payment_method = paymentMethod,
                 customer_name = customerFullName.text.toString().trim(), // Use validated details
                 customer_phone = customerPhone.text.toString().trim(),
@@ -179,9 +179,9 @@ class CheckoutActivity : AppCompatActivity() {
 
         val currencyFormatter = NumberFormat.getCurrencyInstance(Locale("en", "PH"))
 
-        subtotalTextView.text = currencyFormatter.format(subtotal)
-        shippingFeeTextView.text = currencyFormatter.format(shippingFee)
-        totalTextView.text = currencyFormatter.format(total)
+        subtotalTextView.text = currencyFormatter.format(subtotal).replace(",", "")
+        shippingFeeTextView.text = currencyFormatter.format(shippingFee).replace(",", "")
+        totalTextView.text = currencyFormatter.format(total).replace(",", "")
     }
 
     // Function to validate customer details
