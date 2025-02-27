@@ -34,6 +34,14 @@ class CheckoutActivity : AppCompatActivity() {
     private lateinit var customerAddress: TextView
     private lateinit var editCustomerDetails: TextView
 
+    // Shared preferences name for customer details
+    private val CUSTOMER_PREFS_NAME = "CustomerDetailsPrefs"
+
+    // Keys for customer details
+    private val KEY_FULLNAME = "fullName"
+    private val KEY_PHONE = "phone"
+    private val KEY_ADDRESS = "address"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_checkout)
@@ -58,6 +66,15 @@ class CheckoutActivity : AppCompatActivity() {
 
         editCustomerDetails.setOnClickListener {
             val intent = Intent(this, EditCustomerDetailsActivity::class.java)
+
+            val name = customerFullName.text.toString()
+            val phone = customerPhone.text.toString()
+            val address = customerAddress.text.toString()
+
+            intent.putExtra("currentFullName", name)
+            intent.putExtra("currentPhone", phone)
+            intent.putExtra("currentAddress", address)
+
             startActivityForResult(intent, EDIT_REQUEST_CODE)
         }
 
@@ -81,8 +98,8 @@ class CheckoutActivity : AppCompatActivity() {
 
         // Set up button click listener
         placeOrderButton.setOnClickListener {
-            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            val userId = sharedPreferences.getInt("user_id", -1)
+            val userPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+            val userId = userPrefs.getInt("user_id", -1)
 
             if (userId == -1) {
                 Toast.makeText(this, "User not logged in!", Toast.LENGTH_SHORT).show()
@@ -104,13 +121,13 @@ class CheckoutActivity : AppCompatActivity() {
                 user_id = userId,
                 total_price = totalTextView.text.toString().replace("₱", "").replace(",","").toDouble(),
                 payment_method = paymentMethod,
-                customer_name = customerFullName.text.toString().trim(), // Use validated details
+                customer_name = customerFullName.text.toString().trim(),
                 customer_phone = customerPhone.text.toString().trim(),
                 customer_address = customerAddress.text.toString().trim(),
                 order_items = orderItems
             )
 
-            // Call API (same as before)
+            // Call API
             val call = OrderApiClient.apiService.placeOrder(orderRequest)
             call.enqueue(object : Callback<OrderResponse> {
                 override fun onResponse(call: retrofit2.Call<OrderResponse>, response: retrofit2.Response<OrderResponse>) {
@@ -142,33 +159,52 @@ class CheckoutActivity : AppCompatActivity() {
             val updatedPhone = data.getStringExtra("updatedPhone")
             val updatedAddress = data.getStringExtra("updatedAddress")
 
-            // Update UI and save to SharedPreferences
-            customerFullName.text = updatedFullName ?: "Enter Full Name"
-            customerPhone.text = updatedPhone ?: "Enter Phone Number"
-            customerAddress.text = updatedAddress ?: "Enter Address"
+            // Update UI
+            updatedFullName?.let { customerFullName.text = it }
+            updatedPhone?.let { customerPhone.text = it }
+            updatedAddress?.let { customerAddress.text = it }
 
-            val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-            val editor = sharedPreferences.edit()
-            val userId = sharedPreferences.getInt("user_id", -1) // Get user ID
-
-            if (userId != -1) { // Only save if user ID is valid
-                editor.putString("fullName_$userId", updatedFullName)
-                editor.putString("phone_$userId", updatedPhone)
-                editor.putString("address_$userId", updatedAddress)
-                editor.apply()
+            // Save to user-specific preferences
+            if (updatedFullName != null && updatedPhone != null && updatedAddress != null) {
+                saveCustomerDetails(updatedFullName, updatedPhone, updatedAddress)
             }
         }
     }
 
     // Function to load saved customer details
     private fun loadCustomerDetails() {
-        val sharedPreferences = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        val userId = sharedPreferences.getInt("user_id", -1)
+        val userPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = userPrefs.getInt("user_id", -1)
 
         if (userId != -1) {
-            customerFullName.text = sharedPreferences.getString("fullName_$userId", "Enter Full Name")
-            customerPhone.text = sharedPreferences.getString("phone_$userId", "Enter Phone Number")
-            customerAddress.text = sharedPreferences.getString("address_$userId", "Enter Address")
+            // Get the customer details for this specific user
+            val customerPrefs = getSharedPreferences(CUSTOMER_PREFS_NAME, Context.MODE_PRIVATE)
+
+            customerFullName.text = customerPrefs.getString("${KEY_FULLNAME}_$userId", "Enter Full Name")
+            customerPhone.text = customerPrefs.getString("${KEY_PHONE}_$userId", "Enter Phone Number")
+            customerAddress.text = customerPrefs.getString("${KEY_ADDRESS}_$userId", "Enter Address")
+        } else {
+            // Default values if no user is logged in
+            customerFullName.text = "Enter Full Name"
+            customerPhone.text = "Enter Phone Number"
+            customerAddress.text = "Enter Address"
+        }
+    }
+
+    // Function to save customer details
+    private fun saveCustomerDetails(fullName: String, phone: String, address: String) {
+        val userPrefs = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        val userId = userPrefs.getInt("user_id", -1)
+
+        if (userId != -1) {
+            // Save the customer details for this specific user
+            val customerPrefs = getSharedPreferences(CUSTOMER_PREFS_NAME, Context.MODE_PRIVATE)
+            val editor = customerPrefs.edit()
+
+            editor.putString("${KEY_FULLNAME}_$userId", fullName)
+            editor.putString("${KEY_PHONE}_$userId", phone)
+            editor.putString("${KEY_ADDRESS}_$userId", address)
+            editor.apply()
         }
     }
 
@@ -191,12 +227,10 @@ class CheckoutActivity : AppCompatActivity() {
         val address = customerAddress.text.toString().trim()
 
         if (fullName.isEmpty() || phone.isEmpty() || address.isEmpty() ||
-            fullName == "Enter Full Name" || phone == "Enter Phone Number" || address == "Enter Address") { // Added check for placeholder text
+            fullName == "Enter Full Name" || phone == "Enter Phone Number" || address == "Enter Address") {
             Toast.makeText(this, "Please complete your customer details before placing the order!", Toast.LENGTH_SHORT).show()
             return false
         }
-
-        // You can add more validation here if needed (e.g., phone number format)
 
         return true
     }
