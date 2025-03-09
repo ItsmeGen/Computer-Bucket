@@ -18,7 +18,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Search Here"
+            android:hint="Search Computer Parts/Laptop Model "
             android:background="@color/white"
             android:inputType="text"
             android:padding="8dp"
@@ -31,6 +31,7 @@
             android:src="@drawable/shopping_cart"
             android:layout_gravity="center_vertical"/>
     </LinearLayout>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:background="@color/whitef4"

@@ -23,7 +23,6 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> loadFragment(HomeFragment())
-                R.id.nav_services -> loadFragment(ServicesFragment())
                 R.id.nav_notification -> loadFragment(NotificationFragment())
                 R.id.nav_profile -> loadFragment(ProfileFragment())
             }

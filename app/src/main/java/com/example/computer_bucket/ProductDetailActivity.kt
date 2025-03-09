@@ -39,7 +39,7 @@ class ProductDetailActivity : AppCompatActivity() {
 
                 productNameText.text = productName
                 productDescriptionText.text = productDescription
-                productPriceText.text = "Price: PHP:${productPrice}"
+                productPriceText.text = "Price: ₱ ${productPrice}"
 
                 Glide.with(this@ProductDetailActivity)
                     .load(productImgUrl)

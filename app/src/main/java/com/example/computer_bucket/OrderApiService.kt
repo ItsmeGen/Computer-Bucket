@@ -25,7 +25,7 @@ object OrderApiClient {
         .build()
 
     private val retrofit = Retrofit.Builder()
-        .baseUrl("http://192.168.39.240/projectApi/orderApi/")
+        .baseUrl("http://192.168.180.240/projectApi/orderApi/")
         .client(client)
         .addConverterFactory(GsonConverterFactory.create())
         .build()

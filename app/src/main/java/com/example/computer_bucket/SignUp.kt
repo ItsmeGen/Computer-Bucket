@@ -10,6 +10,7 @@ import android.text.method.PasswordTransformationMethod
 import android.view.MotionEvent
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -39,7 +40,7 @@ class SignUp : AppCompatActivity() {
         // Buttons and EditTexts
         btnSignUp = findViewById(R.id.btnSignIn)
         etPassword = findViewById(R.id.create_password)
-        val btnLogin: TextView = findViewById(R.id.login)
+        val arrowBack: ImageView = findViewById(R.id.arrowBack)
         val etUsername: EditText = findViewById(R.id.username)
         val etEmail: EditText = findViewById(R.id.create_email)
 
@@ -69,8 +70,9 @@ class SignUp : AppCompatActivity() {
             registerUser(username, email, password)
         }
 
-        btnLogin.setOnClickListener {
+        arrowBack.setOnClickListener {
             startActivity(Intent(this, Login::class.java))
+            finish()
         }
     }
     private fun togglePasswordVisibility() {

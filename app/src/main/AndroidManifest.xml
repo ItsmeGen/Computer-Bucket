@@ -32,9 +32,6 @@
             android:name=".ProductDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".ItemProductActivity"
-            android:exported="false" />
-        <activity
             android:name=".SignUp"
             android:exported="false" />
         <activity

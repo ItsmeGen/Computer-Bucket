@@ -8,6 +8,7 @@
     android:fitsSystemWindows="true"
     tools:context=".Login">
 
+
     <LinearLayout
         android:id="@+id/loadingLayout"
         android:layout_width="wrap_content"
@@ -51,6 +52,7 @@
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
             android:src="@drawable/logo"
             tools:ignore="MissingConstraints" />
 
@@ -58,7 +60,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
-            android:text="Computer Bucket"
+            android:text="Computer Hub"
             android:gravity="center"
             android:textSize="30sp"
             android:textColor="@color/black"/>
