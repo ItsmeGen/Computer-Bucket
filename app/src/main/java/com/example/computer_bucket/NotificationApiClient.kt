@@ -3,17 +3,14 @@ package com.example.computer_bucket
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-object UserApiClient {
-    private const val BASE_URL = "http://192.168.94.240/projectApi/userApi/"
+object NotificationApiClient{
+    private const val BASE_URL = "http://192.168.94.240/projectApi/get_notification/" // Change if using a real server
 
-    private val retrofit: Retrofit by lazy {
+    val instance: NotificationApiService by lazy {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-    }
-
-    val apiService: UserApiService by lazy {
-        retrofit.create(UserApiService::class.java)
+            .create(NotificationApiService::class.java)
     }
 }

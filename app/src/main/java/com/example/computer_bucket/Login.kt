@@ -8,7 +8,6 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.method.HideReturnsTransformationMethod
 import android.text.method.PasswordTransformationMethod
-import android.util.Log
 import android.view.MotionEvent
 import android.widget.*
 import androidx.activity.enableEdgeToEdge
@@ -26,22 +25,18 @@ class Login : AppCompatActivity() {
     private lateinit var loadingDialog: Dialog
     private lateinit var sharedPreferences: SharedPreferences
     private var isPasswordVisible = false
-    private var hasShownToast = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Initialize SharedPreferences
         sharedPreferences = getSharedPreferences("UserPrefs", MODE_PRIVATE)
 
-        // Check if user is already logged in
         if (sharedPreferences.getBoolean("is_logged_in", false)) {
             startActivity(Intent(this, MainActivity::class.java))
             finish()
             return
         }
 
-        // Setup loading dialog
         loadingDialog = Dialog(this)
         loadingDialog.setContentView(R.layout.progress_loading)
         loadingDialog.setCancelable(false)
@@ -50,17 +45,15 @@ class Login : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
 
-        // Initialize UI elements
         emailEditText = findViewById(R.id.email)
         passwordEditText = findViewById(R.id.password)
         btnLogin = findViewById(R.id.btnLogin)
         signUp = findViewById(R.id.sign_in_btn)
         progressBarLayout = findViewById(R.id.loadingLayout)
 
-        // Set up password visibility toggle using drawableEnd
         passwordEditText.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_UP) {
-                val drawableEnd = passwordEditText.compoundDrawables[2] // Right drawable
+                val drawableEnd = passwordEditText.compoundDrawables[2]
                 if (drawableEnd != null && event.rawX >= (passwordEditText.right - drawableEnd.bounds.width())) {
                     togglePasswordVisibility()
                     passwordEditText.performClick()
@@ -83,7 +76,6 @@ class Login : AppCompatActivity() {
                 loginUser(email, password)
             } else {
                 Toast.makeText(this, "Please enter email and password!", Toast.LENGTH_SHORT).show()
-                hasShownToast = true
             }
         }
     }
@@ -111,16 +103,23 @@ class Login : AppCompatActivity() {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 loadingDialog.dismiss()
                 btnLogin.isEnabled = true
+
                 if (response.isSuccessful && response.body() != null) {
                     val loginResponse = response.body()!!
+
                     if (loginResponse.success) {
                         val user = loginResponse.user
 
-                        // Save user details in SharedPreferences
+                        // Check if user is blocked
+                        if (user.status == "blocked") {
+                            Toast.makeText(this@Login, "Your account is blocked. Contact support.", Toast.LENGTH_LONG).show()
+                            return
+                        }
+
                         val editor = sharedPreferences.edit()
                         editor.putInt("user_id", user.id.toInt())
                         editor.putString("username", user.username)
-                        editor.putBoolean("is_logged_in", true) // Save login state
+                        editor.putBoolean("is_logged_in", true)
                         editor.apply()
 
                         startActivity(Intent(this@Login, MainActivity::class.java))

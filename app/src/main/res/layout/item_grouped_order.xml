@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:text="Order #123" />
+            android:text="Order Information" />
 
         <TextView
             android:id="@+id/customerName"

@@ -11,7 +11,6 @@ class GroupedOrdersAdapter(private val orders: List<GroupedOrder>) :
     RecyclerView.Adapter<GroupedOrdersAdapter.OrderViewHolder>() {
 
     class OrderViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val orderIdText: TextView = view.findViewById(R.id.orderIdText)
         val customerName: TextView = view.findViewById(R.id.customerName)
         val orderStatus: TextView = view.findViewById(R.id.orderStatus)
         val totalPrice: TextView = view.findViewById(R.id.totalPrice)
@@ -26,7 +25,6 @@ class GroupedOrdersAdapter(private val orders: List<GroupedOrder>) :
 
     override fun onBindViewHolder(holder: OrderViewHolder, position: Int) {
         val order = orders[position]
-        holder.orderIdText.text = "Order #${order.id}"
         holder.customerName.text = "Customer: ${order.customer_name}"
         holder.orderStatus.text = "Status: ${order.order_status}"
         holder.totalPrice.text = "Total: $${order.total_price}"
