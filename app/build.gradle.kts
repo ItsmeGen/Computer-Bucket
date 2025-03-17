@@ -56,5 +56,6 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.glide)
     annotationProcessor (libs.glide)
+    implementation(libs.shortcut.badger)
 
 }

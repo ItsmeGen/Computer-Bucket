@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object NotificationApiClient{
-    private const val BASE_URL = "http://192.168.94.240/projectApi/get_notification/" // Change if using a real server
+    private const val BASE_URL = "http://192.168.170.240/projectApi/get_notification/" // Change if using a real server
 
     val instance: NotificationApiService by lazy {
         Retrofit.Builder()

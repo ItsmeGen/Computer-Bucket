@@ -15,8 +15,10 @@ okhttp = "4.10.0"
 recyclerview = "1.4.0"
 glide = "4.16.0"
 glide-compiler = { module = "com.github.bumptech.glide:compiler:4.16.0" }
+shortcut-badger = "1.1.22"
 
 [libraries]
+shortcut-badger = { module = "me.leolin:ShortcutBadger", version.ref = "shortcut-badger" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }

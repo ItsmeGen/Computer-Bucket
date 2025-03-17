@@ -2,6 +2,7 @@ package com.example.computer_bucket
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,7 +38,7 @@ class HomeFragment : Fragment() {
 
         val cartBtn : ImageView = view.findViewById(R.id.cart_btn)
         cartBtn.setOnClickListener{
-            val intent = Intent(activity,CartActivity::class.java)
+            val intent = Intent(activity, CartActivity::class.java)
             startActivity(intent)
         }
     }
@@ -60,9 +61,13 @@ class HomeFragment : Fragment() {
             adapter = productAdapter
         }
     }
+
     private fun fetchProducts() {
         apiService.productlist().enqueue(object : Callback<List<Product>> {
             override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
+                // Check if fragment is still attached
+                if (!isAdded) return
+
                 if (response.isSuccessful) {
                     response.body()?.let {
                         productAdapter.submitList(it)
@@ -73,7 +78,12 @@ class HomeFragment : Fragment() {
             }
 
             override fun onFailure(call: Call<List<Product>>, t: Throwable) {
-                Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                // Check if fragment is still attached before using context
+                if (isAdded) {
+                    Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+                // Log error regardless of fragment state
+                Log.e("HomeFragment", "API call failed", t)
             }
         })
     }
