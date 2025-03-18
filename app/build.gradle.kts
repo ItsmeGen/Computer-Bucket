@@ -57,5 +57,7 @@ dependencies {
     implementation(libs.glide)
     annotationProcessor (libs.glide)
     implementation(libs.shortcut.badger)
+    implementation(libs.material)
+    implementation(libs.viewpager2)
 
 }

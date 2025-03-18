@@ -16,8 +16,10 @@ recyclerview = "1.4.0"
 glide = "4.16.0"
 glide-compiler = { module = "com.github.bumptech.glide:compiler:4.16.0" }
 shortcut-badger = "1.1.22"
+viewpager2 = "1.0.0"
 
 [libraries]
+viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
 shortcut-badger = { module = "me.leolin:ShortcutBadger", version.ref = "shortcut-badger" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glide" }
 glide-compiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glide" }

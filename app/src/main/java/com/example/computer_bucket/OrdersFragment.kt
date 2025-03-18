@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,6 +16,13 @@ import retrofit2.Response
 
 class OrdersFragment : Fragment() {
 
+    private lateinit var tvToPay: TextView
+    private lateinit var tvToShip: TextView
+    private lateinit var tvToReceive: TextView
+    private lateinit var tvDelivered: TextView
+    private lateinit var tvCompleted: TextView
+    private lateinit var orderContentContainer: FrameLayout
+
     private lateinit var ordersRecyclerView: RecyclerView
     private lateinit var ordersAdapter: GroupedOrdersAdapter
     private var groupedOrdersList = mutableListOf<GroupedOrder>()
@@ -23,15 +32,57 @@ class OrdersFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = inflater.inflate(R.layout.fragment_orders, container, false)
-        ordersRecyclerView = view.findViewById(R.id.ordersRecyclerView)
-        ordersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        // Initialize tab menu TextViews
+        tvToPay = view.findViewById(R.id.tvToPay)
+        tvToShip = view.findViewById(R.id.tvToShip)
+        tvToReceive = view.findViewById(R.id.tvToReceive)
+        tvDelivered = view.findViewById(R.id.tvDelivered)
+        tvCompleted = view.findViewById(R.id.tvCompleted)
+        orderContentContainer = view.findViewById(R.id.orderContentContainer)
+        ordersRecyclerView = view.findViewById(R.id.ordersRecyclerView)
+
+        // Set RecyclerView layout
+        ordersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         ordersAdapter = GroupedOrdersAdapter(groupedOrdersList)
         ordersRecyclerView.adapter = ordersAdapter
 
+        // Load default fragment (ToPayFragment)
+        replaceFragment(ToPayFragment())
+
+        // Set onClickListeners for each tab
+        tvToPay.setOnClickListener { loadFragment(ToPayFragment()) }
+        tvToShip.setOnClickListener { loadFragment(ToShipFragment()) }
+        tvToReceive.setOnClickListener { loadFragment(ToReceiveFragment()) }
+        tvDelivered.setOnClickListener { loadFragment(DeliveredFragment()) }
+        tvCompleted.setOnClickListener { loadFragment(CompletedFragment()) }
+
+        // Fetch orders from API
         fetchOrders()
 
         return view
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        childFragmentManager.beginTransaction()
+            .replace(R.id.orderContentContainer, fragment)
+            .commit()
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        // Hide RecyclerView when switching to a sub-fragment
+        ordersRecyclerView.visibility = View.GONE
+
+        childFragmentManager.beginTransaction()
+            .replace(R.id.orderContentContainer, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Show RecyclerView when returning to OrdersFragment
+        ordersRecyclerView.visibility = View.VISIBLE
     }
 
     private fun fetchOrders() {

@@ -1,45 +1,136 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".OrdersFragment"
-    android:background="@color/green">
+    android:id="@+id/ordersContainer"
+    android:background="@color/green"
+    tools:context=".OrdersFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- Top Bar with Elevation -->
         <RelativeLayout
             android:id="@+id/topBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/green"
-            android:padding="12dp"
             android:elevation="4dp"
+            android:padding="12dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             tools:ignore="MissingConstraints">
 
             <TextView
                 android:id="@+id/tvNotif"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:text="Orders"
                 android:textAlignment="center"
-                android:textSize="22sp"
-                android:textStyle="bold"
                 android:textColor="@color/white"
-                android:layout_centerInParent="true"/> <!-- Centered title -->
+                android:textSize="22sp"
+                android:textStyle="bold" />
         </RelativeLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/orderStatusScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            app:layout_constraintTop_toBottomOf="@id/topBar"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:id="@+id/orderStatusLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/green"
+                android:orientation="horizontal"
+                android:padding="8dp">
+
+                <TextView
+                    android:id="@+id/tvToPay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="To Pay"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvToShip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="To Ship"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvToReceive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="To Receive"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvDelivered"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="Delivered"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/tvCompleted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="Completed"
+                    android:textColor="@color/white"
+                    android:textSize="16sp" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+        <FrameLayout
+            android:id="@+id/orderContentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/white"
+            android:clipToPadding="false"
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orderStatusScrollView" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/ordersRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="12dp"
-            android:layout_marginTop="?attr/actionBarSize"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/white"
             android:clipToPadding="false"
-            android:background="@android:color/white"/>
+            android:padding="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/orderStatusScrollView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
