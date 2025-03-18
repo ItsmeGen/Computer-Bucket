@@ -5,7 +5,9 @@
     <color name ="green">#254d32</color>
     <color name ="whitef4">#f4f4f4</color>
     <color name ="red">#FF0000</color>
-    <color name="unread_background">#F5F5F5</color> <!-- Light gray background for unread items -->
+    <color name="unread_background">#F5F5F5</color>
+    <color name="selected_tab_color">#254d32</color>
+    <color name="default_tab_color">#FF000000</color>
 
 
 </resources>

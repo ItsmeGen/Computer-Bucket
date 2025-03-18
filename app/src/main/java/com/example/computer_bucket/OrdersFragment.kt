@@ -1,5 +1,6 @@
 package com.example.computer_bucket
 
+import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -47,15 +49,32 @@ class OrdersFragment : Fragment() {
         ordersAdapter = GroupedOrdersAdapter(groupedOrdersList)
         ordersRecyclerView.adapter = ordersAdapter
 
-        // Load default fragment (ToPayFragment)
+        // Load default fragment (ToPayFragment) and set initial selected tab
         replaceFragment(ToPayFragment())
+        selectTab(tvToPay) // Select "To Pay" tab by default
 
         // Set onClickListeners for each tab
-        tvToPay.setOnClickListener { loadFragment(ToPayFragment()) }
-        tvToShip.setOnClickListener { loadFragment(ToShipFragment()) }
-        tvToReceive.setOnClickListener { loadFragment(ToReceiveFragment()) }
-        tvDelivered.setOnClickListener { loadFragment(DeliveredFragment()) }
-        tvCompleted.setOnClickListener { loadFragment(CompletedFragment()) }
+        tvToPay.setOnClickListener {
+            replaceFragment(ToPayFragment())
+            ordersRecyclerView.visibility = View.VISIBLE
+            selectTab(tvToPay)
+        }
+        tvToShip.setOnClickListener {
+            loadFragment(ToShipFragment())
+            selectTab(tvToShip)
+        }
+        tvToReceive.setOnClickListener {
+            loadFragment(ToReceiveFragment())
+            selectTab(tvToReceive)
+        }
+        tvDelivered.setOnClickListener {
+            loadFragment(DeliveredFragment())
+            selectTab(tvDelivered)
+        }
+        tvCompleted.setOnClickListener {
+            loadFragment(CompletedFragment())
+            selectTab(tvCompleted)
+        }
 
         // Fetch orders from API
         fetchOrders()
@@ -70,7 +89,6 @@ class OrdersFragment : Fragment() {
     }
 
     private fun loadFragment(fragment: Fragment) {
-        // Hide RecyclerView when switching to a sub-fragment
         ordersRecyclerView.visibility = View.GONE
 
         childFragmentManager.beginTransaction()
@@ -81,7 +99,6 @@ class OrdersFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        // Show RecyclerView when returning to OrdersFragment
         ordersRecyclerView.visibility = View.VISIBLE
     }
 
@@ -93,7 +110,6 @@ class OrdersFragment : Fragment() {
             return
         }
 
-        // Fetch orders from API
         OrderFetchApiClient.OrderFetchApiService.getOrders(userId)
             .enqueue(object : Callback<List<OrderItems>> {
                 override fun onResponse(call: Call<List<OrderItems>>, response: Response<List<OrderItems>>) {
@@ -124,6 +140,17 @@ class OrdersFragment : Fragment() {
 
     private fun getUserId(): Int {
         val sharedPreferences = requireContext().getSharedPreferences("UserPrefs", android.content.Context.MODE_PRIVATE)
-        return sharedPreferences.getInt("user_id", -1) // Default is -1 if not found
+        return sharedPreferences.getInt("user_id", -1)
+    }
+
+    private fun selectTab(selectedTextView: TextView) {
+        val selectedColor = ContextCompat.getColor(requireContext(), R.color.selected_tab_color)
+        val defaultColor = ContextCompat.getColor(requireContext(), R.color.default_tab_color)
+
+        tvToPay.setTextColor(if (tvToPay == selectedTextView) selectedColor else defaultColor)
+        tvToShip.setTextColor(if (tvToShip == selectedTextView) selectedColor else defaultColor)
+        tvToReceive.setTextColor(if (tvToReceive == selectedTextView) selectedColor else defaultColor)
+        tvDelivered.setTextColor(if (tvDelivered == selectedTextView) selectedColor else defaultColor)
+        tvCompleted.setTextColor(if (tvCompleted == selectedTextView) selectedColor else defaultColor)
     }
 }

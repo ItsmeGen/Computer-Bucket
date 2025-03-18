@@ -9,8 +9,10 @@
     tools:context=".OrdersFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
 
         <RelativeLayout
             android:id="@+id/topBar"
@@ -46,6 +48,7 @@
             app:layout_constraintEnd_toEndOf="parent">
 
             <LinearLayout
+                android:backgroundTint="@color/white"
                 android:id="@+id/orderStatusLayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -60,8 +63,8 @@
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
                     android:text="To Pay"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/tvToShip"
@@ -70,8 +73,8 @@
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
                     android:text="To Ship"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/tvToReceive"
@@ -80,8 +83,8 @@
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
                     android:text="To Receive"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/tvDelivered"
@@ -90,8 +93,8 @@
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
                     android:text="Delivered"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/tvCompleted"
@@ -100,8 +103,8 @@
                     android:gravity="center"
                     android:paddingHorizontal="16dp"
                     android:text="Completed"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
             </LinearLayout>
         </HorizontalScrollView>
