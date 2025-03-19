@@ -27,7 +27,7 @@ class GroupedOrdersAdapter(private val orders: List<GroupedOrder>) :
         val order = orders[position]
         holder.customerName.text = "Customer: ${order.customer_name}"
         holder.orderStatus.text = "Status: ${order.order_status}"
-        holder.totalPrice.text = "Total: $${order.total_price}"
+        holder.totalPrice.text = "Total: ₱${order.total_price}"
 
         // Set up nested RecyclerView for products
         holder.productsRecyclerView.layoutManager = LinearLayoutManager(holder.itemView.context)

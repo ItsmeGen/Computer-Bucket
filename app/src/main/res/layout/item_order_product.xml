@@ -38,7 +38,7 @@
         android:id="@+id/productPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="$99.99"
+        android:text="₱99.99"
         android:textStyle="bold" />
 
 </LinearLayout>

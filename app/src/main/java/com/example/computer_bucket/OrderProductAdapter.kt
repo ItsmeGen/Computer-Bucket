@@ -28,7 +28,7 @@ class OrderProductsAdapter(private val products: List<OrderProduct>) :
         val product = products[position]
         holder.productName.text = product.product_name
         holder.productQuantity.text = "Qty: ${product.quantity}"
-        holder.productPrice.text = "$${product.price}"
+        holder.productPrice.text = "₱${product.price}"
 
         Glide.with(holder.itemView.context)
             .load(product.product_imgUrl)

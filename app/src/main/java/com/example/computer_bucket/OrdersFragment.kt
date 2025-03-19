@@ -1,6 +1,5 @@
 package com.example.computer_bucket
 
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +27,7 @@ class OrdersFragment : Fragment() {
     private lateinit var ordersRecyclerView: RecyclerView
     private lateinit var ordersAdapter: GroupedOrdersAdapter
     private var groupedOrdersList = mutableListOf<GroupedOrder>()
+    private val orderStatus = "Processing"
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,29 +35,26 @@ class OrdersFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_orders, container, false)
 
-        // Initialize tab menu TextViews
         tvToPay = view.findViewById(R.id.tvToPay)
         tvToShip = view.findViewById(R.id.tvToShip)
         tvToReceive = view.findViewById(R.id.tvToReceive)
         tvDelivered = view.findViewById(R.id.tvDelivered)
         tvCompleted = view.findViewById(R.id.tvCompleted)
         orderContentContainer = view.findViewById(R.id.orderContentContainer)
-        ordersRecyclerView = view.findViewById(R.id.ordersRecyclerView)
+        ordersRecyclerView = view.findViewById(R.id.toPayRecyclerView)
 
-        // Set RecyclerView layout
         ordersRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         ordersAdapter = GroupedOrdersAdapter(groupedOrdersList)
         ordersRecyclerView.adapter = ordersAdapter
 
-        // Load default fragment (ToPayFragment) and set initial selected tab
         replaceFragment(ToPayFragment())
-        selectTab(tvToPay) // Select "To Pay" tab by default
+        selectTab(tvToPay)
 
-        // Set onClickListeners for each tab
         tvToPay.setOnClickListener {
             replaceFragment(ToPayFragment())
             ordersRecyclerView.visibility = View.VISIBLE
             selectTab(tvToPay)
+            fetchOrders() // Fetch only when "To Pay" is clicked
         }
         tvToShip.setOnClickListener {
             loadFragment(ToShipFragment())
@@ -76,8 +73,7 @@ class OrdersFragment : Fragment() {
             selectTab(tvCompleted)
         }
 
-        // Fetch orders from API
-        fetchOrders()
+        fetchOrders() // Fetch on initial load
 
         return view
     }
@@ -110,7 +106,7 @@ class OrdersFragment : Fragment() {
             return
         }
 
-        OrderFetchApiClient.OrderFetchApiService.getOrders(userId)
+        FilteredOrderApiClient.api.getOrders(userId, orderStatus)
             .enqueue(object : Callback<List<OrderItems>> {
                 override fun onResponse(call: Call<List<OrderItems>>, response: Response<List<OrderItems>>) {
                     if (response.isSuccessful) {
