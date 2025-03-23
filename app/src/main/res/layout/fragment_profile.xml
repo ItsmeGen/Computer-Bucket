@@ -37,13 +37,6 @@
                 android:textColor="@color/black"
                 android:layout_marginBottom="5dp" />
 
-            <TextView
-                android:id="@+id/txtUserId"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="User ID:"
-                android:textSize="14sp"/>
-
             <Button
                 android:id="@+id/btnLogin"
                 android:layout_width="wrap_content"

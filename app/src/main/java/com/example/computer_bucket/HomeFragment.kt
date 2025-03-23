@@ -2,6 +2,8 @@ package com.example.computer_bucket
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,6 +16,7 @@ import com.example.computer_bucket.databinding.FragmentHomeBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Locale
 
 class HomeFragment : Fragment() {
 
@@ -21,6 +24,9 @@ class HomeFragment : Fragment() {
     private val binding get() = _binding!!
     private lateinit var productAdapter: ProductAdapter
     private val apiService = ApiClient.create()
+    private var allProducts: List<Product> = listOf()        // Complete list of products
+    private var filteredProducts: MutableList<Product> = mutableListOf() // Filtered products
+    private val TAG = "HomeFragment" // Tag for logging
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,18 +40,81 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         setupRecyclerView()
+        setupSearchBar()
         fetchProducts()
 
-        val cartBtn : ImageView = view.findViewById(R.id.cart_btn)
-        cartBtn.setOnClickListener{
+        val cartBtn: ImageView = view.findViewById(R.id.cart_btn)
+        cartBtn.setOnClickListener {
             val intent = Intent(activity, CartActivity::class.java)
             startActivity(intent)
         }
     }
 
+    private fun setupSearchBar() {
+        binding.searchBar.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+
+            override fun afterTextChanged(s: Editable?) {
+                val query = s.toString().trim()
+                Log.d(TAG, "Search query changed: '$query'")
+                if (query.isEmpty()) {
+                    Log.d(TAG, "Search bar cleared, resetting product list")
+                    resetProductList()
+                } else {
+                    filterProducts(query)
+                }
+            }
+        })
+    }
+
+    private fun filterProducts(query: String) {
+        Log.d(TAG, "Filtering products with query: '$query'")
+        filteredProducts.clear()
+
+        for (product in allProducts) {
+            if (product.product_name.lowercase(Locale.getDefault())
+                    .contains(query.lowercase(Locale.getDefault()))) {
+                filteredProducts.add(product)
+            }
+        }
+
+        Log.d(TAG, "Filter results: ${filteredProducts.size} products matched the query")
+
+        if (filteredProducts.isEmpty()) {
+            binding.noResultsTextView.visibility = View.VISIBLE
+            binding.recyclerView.visibility = View.GONE
+        } else {
+            binding.noResultsTextView.visibility = View.GONE
+            binding.recyclerView.visibility = View.VISIBLE
+        }
+
+        updateRecyclerView(filteredProducts)
+    }
+
+    private fun resetProductList() {
+        Log.d(TAG, "Resetting product list to show all ${allProducts.size} products")
+        filteredProducts.clear()
+        filteredProducts.addAll(allProducts)
+
+        binding.recyclerView.visibility = View.VISIBLE
+        binding.noResultsTextView.visibility = View.GONE
+
+        // ✅ Force RecyclerView to refresh
+        updateRecyclerView(filteredProducts)
+    }
+
+    private fun updateRecyclerView(products: List<Product>) {
+        val newList = ArrayList(products)
+        productAdapter.submitList(newList) {
+            binding.recyclerView.adapter = productAdapter // 🔥 Force RecyclerView refresh
+        }
+    }
+
     private fun setupRecyclerView() {
+        Log.d(TAG, "Setting up RecyclerView")
         productAdapter = ProductAdapter { product ->
-            // Navigate to detail activity instead of fragment
             val intent = Intent(requireContext(), ProductDetailActivity::class.java).apply {
                 putExtra("product_id", product.product_id)
                 putExtra("product_name", product.product_name)
@@ -63,27 +132,38 @@ class HomeFragment : Fragment() {
     }
 
     private fun fetchProducts() {
+        Log.d(TAG, "Fetching products from API")
         apiService.productlist().enqueue(object : Callback<List<Product>> {
             override fun onResponse(call: Call<List<Product>>, response: Response<List<Product>>) {
-                // Check if fragment is still attached
                 if (!isAdded) return
 
                 if (response.isSuccessful) {
                     response.body()?.let {
-                        productAdapter.submitList(it)
+                        allProducts = it
+                        filteredProducts.clear()
+                        filteredProducts.addAll(it)
+
+                        if (it.isEmpty()) {
+                            binding.noResultsTextView.visibility = View.VISIBLE
+                            binding.recyclerView.visibility = View.GONE
+                        } else {
+                            binding.noResultsTextView.visibility = View.GONE
+                            binding.recyclerView.visibility = View.VISIBLE
+                        }
+
+                        updateRecyclerView(filteredProducts)
                     }
                 } else {
+                    Log.e(TAG, "API error: ${response.code()} - ${response.message()}")
                     Toast.makeText(requireContext(), "Failed to load products", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onFailure(call: Call<List<Product>>, t: Throwable) {
-                // Check if fragment is still attached before using context
                 if (isAdded) {
+                    Log.e(TAG, "API call failed", t)
                     Toast.makeText(requireContext(), "Error: ${t.message}", Toast.LENGTH_SHORT).show()
                 }
-                // Log error regardless of fragment state
-                Log.e("HomeFragment", "API call failed", t)
             }
         })
     }

@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object FilteredOrderApiClient {
 
-    private const val BASE_URL = "http://192.168.170.240/projectApi/filter_orders/"
+    private const val BASE_URL = "http://192.168.195.240/projectApi/filter_orders/"
 
     val api: FilteredOrderApiService by lazy {
         val retrofit = Retrofit.Builder()

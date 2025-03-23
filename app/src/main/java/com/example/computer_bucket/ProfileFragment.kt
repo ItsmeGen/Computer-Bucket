@@ -19,7 +19,6 @@ class ProfileFragment : Fragment() {
     ): View {
         val view = inflater.inflate(R.layout.fragment_profile, container, false)
 
-        val txtUserId: TextView = view.findViewById(R.id.txtUserId)
         val txtUsername: TextView = view.findViewById(R.id.txtUsername)
         val btnLogin: Button = view.findViewById(R.id.btnLogin)
         val btnLogout: Button = view.findViewById(R.id.btnLogout)
@@ -29,12 +28,10 @@ class ProfileFragment : Fragment() {
         val username = sharedPref.getString("username", "N/A")
 
         if (userId == -1) {
-            txtUserId.text = "User ID: N/A"
             txtUsername.text = "Username: N/A"
             btnLogout.visibility = View.GONE
             btnLogin.visibility = View.VISIBLE
         } else {
-            txtUserId.text = "User ID: $userId"
             txtUsername.text = "Username: $username"
             btnLogin.visibility = View.GONE
             btnLogout.visibility = View.VISIBLE
