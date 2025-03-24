@@ -41,7 +41,7 @@ class SignUp : AppCompatActivity() {
         // Buttons and EditTexts
         btnSignUp = findViewById(R.id.btnSignIn)
         etPassword = findViewById(R.id.create_password)
-        etConfirmPassword = findViewById(R.id.confirm_password) // ✅ Added Confirm Password
+        etConfirmPassword = findViewById(R.id.confirm_password)
         val arrowBack: ImageView = findViewById(R.id.arrowBack)
         val etUsername: EditText = findViewById(R.id.username)
         val etEmail: EditText = findViewById(R.id.create_email)
@@ -80,16 +80,38 @@ class SignUp : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Must be a valid email format without special characters
-            val emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$".toRegex()
-
-            // Only letters & numbers 15-20 characters, no spaces or special characters
-            val passwordRegex = "^[a-zA-Z0-9]{15,20}$".toRegex()
-
-            if (!email.matches(emailRegex)) {
+            // Split the email to check the local part separately
+            val emailParts = email.split("@")
+            if (emailParts.size != 2) {
                 Toast.makeText(this, "Invalid email format!", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
+
+            val localPart = emailParts[0]
+
+            // Check if local part has at least 8 alphabetic characters
+            val alphabetCount = localPart.count { it.isLetter() }
+            if (alphabetCount < 8) {
+                Toast.makeText(this, "Email username must have at least 8 alphabetic characters!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Check if local part has no more than 2 numeric characters
+            val digitCount = localPart.count { it.isDigit() }
+            if (digitCount > 2) {
+                Toast.makeText(this, "Email username cannot have more than 2 digits!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Check general email format
+            val generalEmailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$".toRegex()
+            if (!email.matches(generalEmailRegex)) {
+                Toast.makeText(this, "Invalid email format!", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Only letters & numbers 15-20 characters, no spaces or special characters
+            val passwordRegex = "^[a-zA-Z0-9]{15,20}$".toRegex()
 
             if (!password.matches(passwordRegex)) {
                 Toast.makeText(this, "Password must be 15-20 characters long and contain only letters and numbers!", Toast.LENGTH_SHORT).show()
