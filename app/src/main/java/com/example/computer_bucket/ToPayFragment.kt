@@ -7,7 +7,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -19,6 +22,9 @@ class ToPayFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var groupedOrdersAdapter: GroupedOrdersAdapter
+    private lateinit var progressBar: ProgressBar
+    private lateinit var emptyStateTextView: TextView
+
     private val groupedOrders = mutableListOf<GroupedOrder>()
     private var userId = 0
     private val orderStatus = "Processing"
@@ -31,48 +37,94 @@ class ToPayFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_to_pay, container, false)
 
+        // Initialize views
         recyclerView = view.findViewById(R.id.toPayRecyclerView)
+        progressBar = view.findViewById(R.id.progressBar)
+        emptyStateTextView = view.findViewById(R.id.emptyStateTextView)
+
+        // Setup RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(context)
         groupedOrdersAdapter = GroupedOrdersAdapter(groupedOrders)
         recyclerView.adapter = groupedOrdersAdapter
 
-        sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE) // Corrected key to UserPrefs
-        userId = sharedPreferences.getInt("user_id", 0) // Corrected key to user_id
+        // Get User ID
+        sharedPreferences = requireActivity().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
+        userId = sharedPreferences.getInt("user_id", 0)
 
+        // Validate User ID
         if (userId == 0) {
-            Toast.makeText(context, "User ID not found.", Toast.LENGTH_SHORT).show()
-            return view;
+            showErrorState("User ID not found")
+            return view
         }
 
+        // Fetch Orders
         fetchOrders()
 
         return view
     }
 
     private fun fetchOrders() {
-        val call = FilteredOrderApiClient.api.getOrders(userId, orderStatus)
+        // Show loading state
+        setLoadingState(true)
 
+        val call = FilteredOrderApiClient.api.getOrders(userId, orderStatus)
         call.enqueue(object : Callback<List<OrderItems>> {
             override fun onResponse(
                 call: Call<List<OrderItems>>,
                 response: Response<List<OrderItems>>
             ) {
+                // Hide loading state
+                setLoadingState(false)
+
                 if (response.isSuccessful) {
                     val orderItemsList = response.body() ?: emptyList()
-                    val processedOrders = processOrderItems(orderItemsList)
-                    groupedOrders.clear()
-                    groupedOrders.addAll(processedOrders)
-                    groupedOrdersAdapter.notifyDataSetChanged()
+
+                    if (orderItemsList.isEmpty()) {
+                        // Handle empty order list
+                        showEmptyState()
+                    } else {
+                        // Process and display orders
+                        val processedOrders = processOrderItems(orderItemsList)
+                        groupedOrders.clear()
+                        groupedOrders.addAll(processedOrders)
+                        groupedOrdersAdapter.notifyDataSetChanged()
+
+                        // Hide empty state if orders exist
+                        emptyStateTextView.isVisible = false
+                        recyclerView.isVisible = true
+                    }
                 } else {
-                    Toast.makeText(context, "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
-                    Log.e("Retrofit", "Error: ${response.code()}")
+                    showErrorState("Error: ${response.code()}")
                 }
             }
 
             override fun onFailure(call: Call<List<OrderItems>>, t: Throwable) {
-                Toast.makeText(context, "Network error: ${t.message}", Toast.LENGTH_SHORT).show()
-                Log.e("Retrofit", "Network error: ${t.message}")
+                // Hide loading state
+                setLoadingState(false)
+
+                // Show network error
+                showErrorState("Network error: ${t.message}")
             }
         })
+    }
+
+    private fun setLoadingState(isLoading: Boolean) {
+        progressBar.isVisible = isLoading
+        recyclerView.isVisible = !isLoading
+    }
+
+    private fun showEmptyState() {
+        emptyStateTextView.text = "No processing orders found"
+        emptyStateTextView.isVisible = true
+        recyclerView.isVisible = false
+    }
+
+    private fun showErrorState(message: String) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        Log.e("ToPayFragment", message)
+
+        emptyStateTextView.text = message
+        emptyStateTextView.isVisible = true
+        recyclerView.isVisible = false
     }
 }

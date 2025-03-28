@@ -114,7 +114,12 @@ class CheckoutActivity : AppCompatActivity() {
             val paymentMethod = if (codRadioButton.isChecked) "Cash on Delivery (COD)" else "Other Payment Method"
 
             val orderItems = selectedProducts.map {
-                OrderItem(it.product_id, it.product_name, it.quantity, it.product_price.toDouble())
+                OrderItem(
+                    product_id = it.product_id,
+                    product_name = it.product_name,
+                    quantity = it.quantity,
+                    price = it.product_price.toDouble()
+                )
             }
 
             val orderRequest = OrderRequest(
@@ -125,6 +130,7 @@ class CheckoutActivity : AppCompatActivity() {
                 customer_phone = customerPhone.text.toString().trim(),
                 customer_address = customerAddress.text.toString().trim(),
                 order_items = orderItems
+                // order_status is not explicitly set, so it will default to "Processing"
             )
 
             // Call API

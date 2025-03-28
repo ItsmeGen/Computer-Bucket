@@ -7,6 +7,7 @@ data class OrderRequest(
     val customer_name: String,
     val customer_phone: String,
     val customer_address: String,
+    val order_status: String = "Processing", // Added with default value
     val order_items: List<OrderItem>
 )
 
@@ -22,4 +23,3 @@ data class OrderResponse(
     val message: String,
     val order_id: Int?
 )
-
