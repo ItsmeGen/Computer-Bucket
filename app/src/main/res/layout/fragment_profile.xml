@@ -59,24 +59,12 @@
                 android:visibility="gone" />
         </LinearLayout>
 
-        <TextView
-            android:background="@color/whitef4"
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Products"
-            android:textAlignment="center"
-            android:textSize="25sp"
-            android:textColor="@color/black"
-            app:layout_constraintTop_toBottomOf="@+id/linearTop"
-            tools:ignore="MissingConstraints" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@color/whitef4"
-            app:layout_constraintTop_toBottomOf="@id/textView"
+            app:layout_constraintTop_toBottomOf="@+id/linearTop"
             app:layout_constraintBottom_toBottomOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

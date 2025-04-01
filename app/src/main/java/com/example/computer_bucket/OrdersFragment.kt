@@ -22,6 +22,8 @@ class OrdersFragment : Fragment() {
     private lateinit var tvToReceive: TextView
     private lateinit var tvDelivered: TextView
     private lateinit var tvCompleted: TextView
+    private lateinit var tvReturned: TextView
+    private lateinit var tvCancelled: TextView
     private lateinit var orderContentContainer: FrameLayout
 
     private lateinit var ordersRecyclerView: RecyclerView
@@ -40,6 +42,8 @@ class OrdersFragment : Fragment() {
         tvToReceive = view.findViewById(R.id.tvToReceive)
         tvDelivered = view.findViewById(R.id.tvDelivered)
         tvCompleted = view.findViewById(R.id.tvCompleted)
+        tvReturned = view.findViewById(R.id.tvReturned)
+        tvCancelled = view.findViewById(R.id.tvCancelled)
         orderContentContainer = view.findViewById(R.id.orderContentContainer)
         ordersRecyclerView = view.findViewById(R.id.toPayRecyclerView)
 
@@ -71,6 +75,14 @@ class OrdersFragment : Fragment() {
         tvCompleted.setOnClickListener {
             loadFragment(CompletedFragment())
             selectTab(tvCompleted)
+        }
+        tvReturned.setOnClickListener{
+            loadFragment(ReturnedFragment())
+            selectTab(tvReturned)
+        }
+        tvCancelled.setOnClickListener{
+            loadFragment(CancelledFragment())
+            selectTab(tvCancelled)
         }
 
         fetchOrders() // Fetch on initial load

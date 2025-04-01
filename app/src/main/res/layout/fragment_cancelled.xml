@@ -3,11 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CompletedFragment">
+    tools:context=".CancelledFragment">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/completedRecyclerView"
+        android:id="@+id/cancelledRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical" />
+
 </FrameLayout>

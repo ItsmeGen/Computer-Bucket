@@ -15,13 +15,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class CompletedFragment : Fragment() {
+class CancelledFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var groupedOrdersAdapter: GroupedOrdersAdapter
     private val groupedOrders = mutableListOf<GroupedOrder>()
     private var userId = 0
-    private val orderStatus = "Completed"
+    private val orderStatus = "Cancelled"
     private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreateView(
@@ -29,9 +29,9 @@ class CompletedFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_completed, container, false)
+        val view = inflater.inflate(R.layout.fragment_cancelled, container, false)
 
-        recyclerView = view.findViewById(R.id.completedRecyclerView)
+        recyclerView = view.findViewById(R.id.cancelledRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(context)
         groupedOrdersAdapter = GroupedOrdersAdapter(groupedOrders)
         recyclerView.adapter = groupedOrdersAdapter

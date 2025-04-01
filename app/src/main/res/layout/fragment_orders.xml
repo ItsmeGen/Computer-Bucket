@@ -106,6 +106,26 @@
                     android:textColor="@color/black"
                     android:textSize="18sp" />
 
+                <TextView
+                    android:id="@+id/tvReturned"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="Returned"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <TextView
+                    android:id="@+id/tvCancelled"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingHorizontal="16dp"
+                    android:text="Cancelled Order"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
             </LinearLayout>
         </HorizontalScrollView>
 
