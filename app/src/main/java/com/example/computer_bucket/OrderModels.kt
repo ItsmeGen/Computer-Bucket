@@ -23,7 +23,7 @@ data class GroupedOrder(
     val customer_name: String,
     val customer_phone: String,
     val customer_address: String,
-    val order_status: String,
+    var order_status: String,
     val created_at: String,
     val tracking_number: String?,
     val payment_method: String,

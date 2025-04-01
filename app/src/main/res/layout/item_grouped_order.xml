@@ -7,10 +7,9 @@
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:padding="16dp">
 
         <TextView
@@ -26,14 +25,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Customer: John Doe"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="4dp"
+            android:layout_below="@id/orderIdText" />
 
         <TextView
             android:id="@+id/orderStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Status: Pending"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="4dp"
+            android:layout_below="@id/customerName" />
 
         <TextView
             android:id="@+id/totalPrice"
@@ -41,27 +42,47 @@
             android:layout_height="wrap_content"
             android:text="Total: $199.99"
             android:textStyle="bold"
-            android:layout_marginTop="4dp" />
+            android:layout_marginTop="4dp"
+            android:layout_below="@id/orderStatus" />
 
         <View
+            android:id="@+id/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="#E0E0E0"
             android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            android:layout_below="@id/totalPrice" />
 
         <TextView
+            android:id="@+id/productsLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Products:"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_below="@id/divider" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/productsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:nestedScrollingEnabled="false" />
+            android:nestedScrollingEnabled="false"
+            android:layout_below="@id/productsLabel" />
 
-    </LinearLayout>
+        <!-- Cancel Button - Only visible when status is Processing -->
+        <Button
+            android:id="@+id/cancelButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel Order"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/cancel_button_background"
+            android:textColor="#FFFFFF"
+            android:visibility="gone"
+            android:padding="15dp"
+            android:layout_below="@id/productsRecyclerView"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
 </androidx.cardview.widget.CardView>
